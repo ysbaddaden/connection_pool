@@ -73,6 +73,28 @@ class ConnectionPool
     nil
   end
 
+  # Iterates over all connections in the pool.
+  # Useful for performing maintenance tasks on your connections.
+  def each(&block)
+    if block_given?
+      all = nil
+
+      begin
+        all = Array.new(@size) { @available.pop(@timeout) }
+
+        all.each do |conn|
+          yield(conn)
+        end
+      ensure
+        all.each do |conn|
+          @available << conn
+        end
+      end
+    else
+      Enumerator.new(self, :each)
+    end
+  end
+
   class Wrapper < ::BasicObject
     METHODS = [:with]
 

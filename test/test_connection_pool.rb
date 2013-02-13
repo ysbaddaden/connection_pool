@@ -147,4 +147,20 @@ class TestConnectionPool < MiniTest::Unit::TestCase
 
     assert_equal ['inner', 'outer', 'other'], recorder.calls
   end
+
+  def test_each
+    recorders = []
+
+    pool = ConnectionPool.new(:size => 3) do
+      r = Recorder.new
+      recorders << r
+      r
+    end
+
+    pool.each do |r|
+      r.do_work("close")
+    end
+
+    assert_equal [["close"]] * 3, recorders.map { |r| r.calls }
+  end
 end
