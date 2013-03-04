@@ -23,7 +23,11 @@ class ConnectionPool::TimedStack
         return @que.pop unless @que.empty?
         to_wait = deadline - Time.now
         raise Timeout::Error, "Waited #{timeout} sec" if to_wait <= 0
-        @resource.wait(@mutex, to_wait)
+        if @resource.method(:wait).arity == 2
+          @resource.wait(@mutex, to_wait)
+        else
+          Timeout.timeout(to_wait) { @resource.wait(@mutex) }
+        end
       end
     end
   end

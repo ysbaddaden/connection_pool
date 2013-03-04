@@ -1,3 +1,4 @@
+$:.unshift File.expand_path("../../lib", __FILE__)
 require 'rubygems'
 require 'minitest/pride'
 require 'minitest/autorun'
@@ -16,4 +17,4 @@ end
 
 $VERBOSE = 1
 
-require_relative '../lib/connection_pool'
+require 'connection_pool'
